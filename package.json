@@ -1,0 +1,27 @@
+{
+  "name": "rx-state",
+  "version": "1.0.0",
+  "description": "manage state with observables",
+  "main": "/dist/index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "test": "jest"
+  },
+  "author": "inakikaninaki@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "clean-webpack-plugin": "^3.0.0",
+    "jest": "^26.0.1",
+    "mocha": "^7.2.0",
+    "ts-jest": "^26.1.0",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.3",
+    "webpack": "^5.0.0-beta.17",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "immer": "^6.0.9",
+    "rxjs": "^6.5.5"
+  }
+}
