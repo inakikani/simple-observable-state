@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "files": [
-    "./src"
+    "dist/"
   ],
   "author": "inakikaninaki@gmail.com",
   "license": "ISC",

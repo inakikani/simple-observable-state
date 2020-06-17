@@ -1,8 +1,8 @@
-const {createRxState} = require('../src/create-rx-state')
+const {createRxState} = require('../src/create')
 const {
     STATE_REGISTRY,
     clearRegistry
-} = require('../src/manage-rx-state')
+} = require('../src/registry')
 
 describe('state registry: managing state registry', () => {
     const sliceName = 'manageSliceTest'

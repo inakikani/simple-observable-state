@@ -1,6 +1,6 @@
 const {
     createRxState: createSlice
-} = require('../src/create-rx-state')
+} = require('../../src/create')
 const {
     of,
     concat,
@@ -12,10 +12,10 @@ const {
 } = require('rxjs/operators')
 const {
     dispatch
-} = require('../src')
+} = require('../../src')
 const {
     clearRegistry
-} = require('../src/manage-rx-state')
+} = require('../../src/registry')
 
 beforeAll(clearRegistry)
 describe('createSlice: reuse slice by name', () => {

@@ -1,9 +1,9 @@
 const {
     dispatch
-} = require('../src/index')
+} = require('../../src/index')
 const {
     createRxState,
-} = require('../src/create-rx-state')
+} = require('../../src/create')
 const {
     of
 } = require('rxjs')
@@ -15,7 +15,7 @@ const {
 } = require('rxjs/operators')
 const {
     clearRegistry
-} = require('../src/manage-rx-state')
+} = require('../../src/registry')
 
 beforeAll(clearRegistry)
 describe('createRxState: default arguments', () => {

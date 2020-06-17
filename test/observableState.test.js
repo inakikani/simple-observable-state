@@ -1,7 +1,7 @@
 const {
     createRxState,
     toObservableState
-} = require('../src/create-rx-state')
+} = require('../src/create')
 const {
     timeoutWith,
     take

@@ -1,7 +1,6 @@
 import {ACTION_SUBJECT} from './observables'
-
-// create a state observable if it does not already exists
-export {createRxState as state$$} from './create-rx-state'
-
+import {createRxState as state$$} from './create'
 // dispatch and action
 export const dispatch = ACTION_SUBJECT.next.bind(ACTION_SUBJECT)
+export default state$$
+

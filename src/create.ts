@@ -12,7 +12,7 @@ import {
     shareReplay, 
     distinctUntilChanged 
 } from "rxjs/operators";
-import {STATE_REGISTRY} from './manage-rx-state'
+import {STATE_REGISTRY} from './registry'
 
 // used when createRxState is called without initialState
 const DEFAULT_STATE = {}
