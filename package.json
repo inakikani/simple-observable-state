@@ -1,8 +1,9 @@
 {
-  "name": "rx-state",
+  "name": "simple-observable-state",
   "version": "1.0.0",
   "description": "manage state with observables",
-  "main": "/dist/rxState.js",
+  "main": "/dist/simple-observable-state.js",
+  "module": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "test": "jest"

@@ -2,10 +2,10 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    target: 'node',
-    mode: 'development',
+    // target: 'node',
+    mode: 'production',
     entry: {
-        rxState: './src/index.ts'
+        "simple-observable-state": './src/index.ts'
     },
     resolve: {
         extensions: [ '.ts', '.js' ],
@@ -25,7 +25,12 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        library: 'rx-state',
+        library: 'simple-observable-state',
         libraryTarget: 'umd'
-    }
+    },
+    externals: [
+        'rxjs',
+        /^rxjs\/.+$/,
+        'immer'
+    ]
 }
