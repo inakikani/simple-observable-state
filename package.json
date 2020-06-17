@@ -1,11 +1,12 @@
 {
   "name": "simple-observable-state",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "manage state with observables",
-  "main": "/dist/cjs/index.js",
-  "module": "/dist/esm/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "scripts": {
     "build": "rm -Rf ./dist/* && npx tsc -p tsconfig.esm.json && npx tsc -p tsconfig.cjs.json",
+    "prepublishOnly": "npm run build",
     "test": "jest"
   },
   "files": [
