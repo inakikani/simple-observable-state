@@ -83,9 +83,9 @@ export function toObservableState<T>(obs: Observable<any> | unknown): Observable
  */
 function _path<T>(path:string | Array<string>):ObservableState<T | undefined>{
 
+    if(!path) return this;
     if(typeof path !== 'string' && 
-        !Array.isArray(path) && 
-        !!path
+        !Array.isArray(path)
     ) throw 'state$.path:error: path must be a string or an array of strings'
 
     const _path = Array.isArray(path)

@@ -42,6 +42,17 @@ describe('ObservableState.path: subscribe to path', () => {
     }
     const state$ = createRxState(stateName, reducer, initialState)
 
+    test('path with no argument returns source observable', done => {
+        state$
+            .path()
+            .pipe(take(1))
+            .subscribe(value => {
+                expect(value).toEqual(initialState)
+                expect(value).toBe(initialState)
+                done()
+            })
+    })
+
     test('path returns observable of state property', done => {
         state$
             .path('path.value')
