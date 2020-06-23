@@ -77,7 +77,7 @@ export function toObservableState<T>(obs: Observable<any> | unknown): Observable
 }
 
 /**
- * 
+ * Instance method, to pick a property or deep property from the emitted source observable state. 
  * @param path string or array of strings describing the path to the desired value inside this rxState
  * ie: state$.path('path.to.value') or state$.path(['path', 'to', 'value'])
  */
