@@ -81,7 +81,7 @@ export function toObservableState<T>(obs: Observable<any> | unknown): Observable
  * @param path string or array of strings describing the path to the desired value inside this rxState
  * ie: state$.path('path.to.value') or state$.path(['path', 'to', 'value'])
  */
-function _path(path:string | Array<string>):ObservableState<any>{
+function _path<T>(path:string | Array<string>):ObservableState<T | undefined>{
 
     if(typeof path !== 'string' && 
         !Array.isArray(path) && 
