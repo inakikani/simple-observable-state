@@ -1,5 +1,5 @@
 import {Immutable} from "immer"
-import {Subscribable} from 'rxjs'
+import {Observable} from 'rxjs'
 
 export type InitialStateObject = object
 export type SideEffect = () => void
@@ -19,6 +19,6 @@ export type State<T> = Immutable<T>
 
 export type ReducerFunction<S> = (state: S, action: Action) => S
 
-export interface ObservableState<T> extends Subscribable<State<T>> {
+export interface ObservableState<T> extends Observable<State<T>> {
     path: (path?: string)=>ObservableState<any>
 }
