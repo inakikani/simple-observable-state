@@ -20,5 +20,5 @@ export type State<T> = Immutable<T>
 export type ReducerFunction<S> = (state: S, action: Action) => S
 
 export interface ObservableState<T> extends Observable<T> {
-    path: <T>(path?: string)=>ObservableState<T>
+    path: <S>(path?: string)=>ObservableState<S>
 }
