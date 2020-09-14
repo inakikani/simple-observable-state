@@ -5,7 +5,7 @@ export type InitialStateObject = object
 export type SideEffect = () => void
 export interface Action {
     type: string;
-    paylaod?: any | SideEffect
+    payload?: any | SideEffect
 }
 
 export type RegistryEntry = {
