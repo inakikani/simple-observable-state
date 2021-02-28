@@ -1,5 +1,6 @@
 import {ACTION_SUBJECT} from './observables'
 import {createRxState} from './create'
+export * as v2 from './ObservableStateClassV2'
 /**
  * dispatch action or sideEffect to all registered reducers.
  * @param action the action to be dispatched, must be either a valid action
