@@ -1,31 +1,313 @@
-const { BehaviorSubject, Subject, of } = require("rxjs")
-const { take, pluck, timeout } = require("rxjs/operators")
+const { BehaviorSubject, Subject, of, concat } = require("rxjs")
+const { take, takeWhile } = require("rxjs/operators")
 const { ObservableState } = require("../src")
 
 describe('new ObservableState', () => {
-    test('no params', () => {
+    
+    test('does not throw', () => {
         expect(()=>{
             new ObservableState()
         }).not.toThrow()
+        expect(()=>{
+            new ObservableState(true)
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState(null)
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState(void 0)
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState(0)
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState(1)
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState('1')
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState(new Object())
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState([])
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState([1])
+        }).not.toThrow()
+        expect(()=>{
+            new ObservableState({a:{b:0}})
+        }).not.toThrow()
     })
 
-    test('new Obs with an initial state, no options', done => {
+    test('does throw', () => {
         expect(()=>{
-            let x = new ObservableState({a:{b:'foo'}})
-            console.log(x)
-        }).not.toThrow()
-        done()
-    })
-    test('first value emitted', done => {
-        const _state = {a:{b:'foo'}}
-        const state = new ObservableState(_state)
-        state.subscribe(s => {
-            expect(s).toBe(_state)
-            expect(s.a.b).toEqual('foo')
-            done()
-        })
+            new ObservableState(() => {})
+        }).toThrow("initial state cannot be a function")
     })
 })
+
+describe("ObservableState.subscribe", () => {
+    
+    // throw and not throw is all over the place ... obs.subscribe works in mysterious ways
+    test('does throw', () => {
+
+        expect(() => {
+            new ObservableState(100).subscribe(1)
+        }).toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe('s')
+        }).toThrow()
+    })
+
+    test('does not throw', () => {
+
+        expect(() => {
+            new ObservableState(100).subscribe()
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe(void 0)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe(null)
+        }).not.toThrow()
+        expect(() => { // not sure why BehaviorSubject accepts 0 as a param
+            new ObservableState(100).subscribe(0)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe('')
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe({})
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState(100).subscribe({a: () => {}})
+        }).not.toThrow()
+    })
+
+    test('value emitted on subscribe', done => {
+
+        let next = jest.fn()
+        concat(
+            new ObservableState(void 0).pipe(take(1)),
+            new ObservableState(1).pipe(take(1)),
+            new ObservableState(true).pipe(take(1)),
+            new ObservableState(false).pipe(take(1)),
+            new ObservableState([]).pipe(take(1)),
+            new ObservableState({}).pipe(take(1)),
+            new ObservableState('str').pipe(take(1)),
+            new ObservableState({a: {b: 1}}).pipe(take(1)),
+            new ObservableState(0).pipe(take(1)),
+        ).subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenNthCalledWith(1, void 0)
+                expect(next).toHaveBeenNthCalledWith(2, 1)
+                expect(next).toHaveBeenNthCalledWith(3, true)
+                expect(next).toHaveBeenNthCalledWith(4, false)
+                expect(next).toHaveBeenNthCalledWith(5, [])
+                expect(next).toHaveBeenNthCalledWith(6, {})
+                expect(next).toHaveBeenNthCalledWith(7, 'str')
+                expect(next).toHaveBeenNthCalledWith(8, {a: {b: 1}})
+                expect(next).toHaveBeenNthCalledWith(9, 0)
+                done()
+            }
+        })
+    })
+
+})
+
+describe('ObservableState.next', () => {
+    test('does not throw', () => {
+        expect(() => {
+            new ObservableState().next()
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(void 0)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(null)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(0)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(1)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(-1)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(1.5)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(true)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(false)
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next('')
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next({})
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next({a:1})
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next([])
+        }).not.toThrow()
+        expect(() => {
+            new ObservableState().next(()=>{})
+        }).not.toThrow()
+    })
+
+    test('emits correct value', done => {
+        let next = jest.fn()
+        let _date = new Date()
+
+        let _obsArr = [
+            new ObservableState().next().pipe(take(1)),
+            new ObservableState().next(void 0).pipe(take(1)),
+            new ObservableState().next(null).pipe(take(1)),
+            new ObservableState().next(0).pipe(take(1)),
+            new ObservableState().next(1).pipe(take(1)),
+            new ObservableState().next(-1).pipe(take(1)),
+            new ObservableState().next(1.5).pipe(take(1)),
+            new ObservableState().next(true).pipe(take(1)),
+            new ObservableState().next(false).pipe(take(1)),
+            new ObservableState().next('').pipe(take(1)),
+            new ObservableState().next({}).pipe(take(1)),
+            new ObservableState().next({a:1}).pipe(take(1)),
+            new ObservableState().next([]).pipe(take(1)),
+            new ObservableState().next(_date).pipe(take(1)),
+            new ObservableState().next(()=>{}).pipe(take(1)),
+            new ObservableState().next(()=>4).pipe(take(1)),
+            new ObservableState().next(1).next(2).pipe(take(1)),
+        ]
+        concat(..._obsArr)
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenNthCalledWith(1, undefined)
+                expect(next).toHaveBeenNthCalledWith(2, void 0)
+                expect(next).toHaveBeenNthCalledWith(3, null)
+                expect(next).toHaveBeenNthCalledWith(4, 0)
+                expect(next).toHaveBeenNthCalledWith(5, 1)
+                expect(next).toHaveBeenNthCalledWith(6, -1)
+                expect(next).toHaveBeenNthCalledWith(7, 1.5)
+                expect(next).toHaveBeenNthCalledWith(8, true)
+                expect(next).toHaveBeenNthCalledWith(9, false)
+                expect(next).toHaveBeenNthCalledWith(10, '')
+                expect(next).toHaveBeenNthCalledWith(11, {})
+                expect(next).toHaveBeenNthCalledWith(12, {a:1})
+                expect(next).toHaveBeenNthCalledWith(13, [])
+                expect(next).toHaveBeenNthCalledWith(14, _date)
+                expect(next).toHaveBeenNthCalledWith(15, undefined)
+                expect(next).toHaveBeenNthCalledWith(16, 4)
+                expect(next).toHaveBeenNthCalledWith(17, 2)
+                done()
+            }
+        })
+    })
+
+    test('with existing path', done => {
+        let next = jest.fn()
+        let d1 = new Date()
+        let d2 = new Date(d1.toLocaleDateString())
+        let _state = {
+            a: {
+                b: 'str'
+            },
+            c: {d: true, f: []},
+            g: d1,
+            h: {i: false, j: {}}
+        }
+
+        let o = new ObservableState(_state)
+        o.pipe(takeWhile(x => x !== 'END')).subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenNthCalledWith(1, _state)
+                expect(next).toHaveBeenNthCalledWith(2, expect.objectContaining({a: {b: 'string'}}))
+                expect(next).toHaveBeenNthCalledWith(3, expect.objectContaining({a: {b: 'pneu'}}))
+                expect(next).toHaveBeenNthCalledWith(4, expect.objectContaining({h: expect.objectContaining({i: 444})}))
+                expect(next).toHaveBeenNthCalledWith(5, expect.objectContaining({g: d2}))
+                expect(next).toHaveBeenNthCalledWith(6, expect.objectContaining({
+                    c: expect.objectContaining({
+                        f: expect.arrayContaining([1.6])
+                    })
+                }))
+                expect(next).toHaveBeenNthCalledWith(7, expect.objectContaining({
+                    c: expect.objectContaining({
+                        f: expect.arrayContaining([1.6, true])
+                    })
+                }))
+                expect(next).toHaveBeenNthCalledWith(8, expect.objectContaining({
+                    c: expect.objectContaining({
+                        f: expect.arrayContaining([1.6, true, 20])
+                    })
+                }))
+                expect(next).toHaveBeenNthCalledWith(9, expect.objectContaining({
+                    c: expect.objectContaining({
+                        f: expect.arrayContaining([1.6, true, null])
+                    })
+                }))
+
+                expect(next).toHaveBeenCalledTimes(9)
+                done()
+            }
+        })
+
+        o
+            .next('string', 'a.b')
+            .next('pneu', 'a.b')
+            .next(444, ['h', 'i'])
+            .next(d2, 'g')
+            .next(prev => {
+                prev.push(1.6)
+                return prev
+            }, ['c', 'f'])
+            .next(prev => {
+                prev.push(true)
+                return prev
+            }, ['c', 'f'])
+            .next(prev => {
+                prev[2] = 20
+                return prev
+            }, ['c', 'f'])
+            .next(null, ['c', 'f', 2])
+            .next('END')
+        
+    })
+
+    test('with unexisting path', done => {
+        let next = jest.fn()
+        let o = new ObservableState()
+
+        o.pipe(takeWhile(x => x !== 'END'))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenNthCalledWith(1, void 0)
+                    expect(next).toHaveBeenNthCalledWith(2, {})
+                    expect(next).toHaveBeenNthCalledWith(3, {new : {}})
+                    expect(next).toHaveBeenNthCalledWith(4, {new : {number: 1}})
+                    
+                    expect(next).toHaveBeenCalledTimes(4)
+                    done()
+                }
+            })
+        o
+            .next({})
+            .next({}, 'new')
+            .next(1, 'new.number')
+            .next('END')
+    })
+
+})
+
 describe('ObservableState.path', () => {
     test('path = undefined', done => {
         const _state = {a:{b:'foo'}}
@@ -97,107 +379,3 @@ describe('ObservableState.path', () => {
     })
 
 })
-
-describe('emitting new state', () => {
-    let _state = {a: {b: 'foo'}, c: 200}
-    
-    test('set state to undefined', done => {
-        let next = jest.fn()
-        let s = new ObservableState({..._state})
-        s.pipe(take(2)).subscribe({
-            next: next,
-            complete: () => {
-                expect(next).toHaveBeenCalledTimes(2)
-                expect(next).toHaveBeenNthCalledWith(2, undefined)
-                done()
-            }
-        })
-        s.next()
-    })
-    test('set state to new state', done => {
-        let next = jest.fn()
-        let newState = {
-            ..._state,
-            c: 400,
-            d: 'bar'
-        }
-        let s = new ObservableState({..._state})
-
-        s.pipe(take(2)).subscribe({
-            next: next,
-            complete: () => {
-                expect(next).toHaveBeenCalledTimes(2)
-                expect(next).toHaveBeenNthCalledWith(1, _state)
-                expect(next).toHaveBeenNthCalledWith(2, newState)
-                done()
-            }
-        })
-        s.next(newState)
-    })
-    test('set state prop to undefined via path', done => {
-        let next = jest.fn()
-        let s = new ObservableState({..._state}).path('c')
-        s.pipe(take(2)).subscribe({
-            next: next,
-            complete: () => {
-                expect(next).toHaveBeenCalledTimes(2)
-                expect(next).toHaveBeenNthCalledWith(1, 200)
-                expect(next).toHaveBeenNthCalledWith(2, undefined)
-                done()
-            }
-        })
-        s.next()
-    })
-    test('set state deep prop to new value via path', done => {
-        let next = jest.fn()
-        let s = new ObservableState({..._state}).path('c')
-        s.pipe(take(3)).subscribe({
-            next: next,
-            complete: () => {
-                expect(next).toHaveBeenCalledTimes(3)
-                expect(next).toHaveBeenNthCalledWith(1, 200)
-                expect(next).toHaveBeenNthCalledWith(2, undefined)
-                expect(next).toHaveBeenNthCalledWith(3, 300)
-                done()
-            }
-        })
-        s.next()
-        s.next(300)
-    })
-})
-
-// describe('test sandpit, used for anything', () => {
-//     test('subject on subscribe', done => {
-//         let s = new BehaviorSubject(1)
-//         let o1 = s.subscribe()
-//     })
-//    test('pluck', done => {
-//        let sub = of({a: 'foo', b: 'bar'})
-//        .pipe(
-//            pluck()
-//        )
-//        .subscribe({
-//            next: obj => {
-//                expect(obj).toEqual({a: 'foo', b: 'bar'})
-//                done()
-//            }
-//        })
-//    })
-// test('pluck filters or not', done => {
-    //     let s = {a: {b: 'foo'}}
-    //     let next = jest.fn()
-    //     const s$ = new BehaviorSubject(s)
-    //     s$.pipe(
-    //         take(2),
-    //         pluck('invalid')
-    //     )
-    //     .subscribe({
-    //         next: next,
-    //         complete: err => {
-    //             expect(next).not.toHaveBeenCalled()
-    //             done()
-    //         }
-    //     })
-    //     s$.next(s)
-    // })
-// })

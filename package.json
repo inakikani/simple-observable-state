@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rm -Rf ./dist/* && npx tsc -p tsconfig.esm.json && npx tsc -p tsconfig.cjs.json",
     "prepublishOnly": "npm run build",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "files": [
     "dist/"

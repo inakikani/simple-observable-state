@@ -20,7 +20,8 @@ type ObservableStateOptions = {
     id: string;
     source?: ObservableState<any>,
     async?: Promise<any>,
-    pluck?: string[]
+    pluck?: string[],
+    ignoreUndefinedFromSource?: boolean
 }
 
 export let observableStatesMap = new Map()
@@ -33,6 +34,7 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     _pluck?: string[]
 
     constructor(init: any, options?: ObservableStateOptions) {
+        if(typeof init === 'function'){throw new TypeError("initial state cannot be a function")}
         super(init)
         if (options?.id) {
             this.id = options.id
@@ -45,7 +47,7 @@ export class ObservableState<T> extends BehaviorSubject<T> {
             if (this._pluck.length > 0) {
                 this._source
                     .pipe(
-                        filter(s => !!s),
+                        filter(s => options?.ignoreUndefinedFromSource ?? !!s),
                         pluck(...this._pluck)
                     ).subscribe({
                         next: (s) => super.next(s as T),
@@ -89,19 +91,19 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         if (this._source) {
             this._source.next(nState, fullPathArr)
         } else {
-            let newState = produce(this.getValue(), draft => {
+            let newState = produce(super.getValue(), draft => {
                 if (pathArr?.length === 0) {
                     if(typeof nState === 'function'){
-                        let reducedState = nState(draft)
+                        let reducedState = produce(nState)(draft)
                         return reducedState ?? nothing
                     } else {
-                        return nState ?? nothing
+                        return nState === undefined ? nothing : nState
                     }
                 } else {
                     let propName = pathArr.pop()
                     let _old = get(pathArr, draft)[propName]
                     if(typeof nState === 'function'){
-                        let reducedState = nState(_old)
+                        let reducedState = produce(nState)(_old)
                         get(pathArr, draft)[propName] = reducedState
                     } else {
                         get(pathArr, draft)[propName] = nState
@@ -110,5 +112,7 @@ export class ObservableState<T> extends BehaviorSubject<T> {
             })
             super.next(newState as T)
         }
+
+        return this
     }
 }
