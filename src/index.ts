@@ -1,8 +1,8 @@
-import { BehaviorSubject, from, Observable } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { filter, pluck } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
 
-export function get(path, obj) {
+function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
 }
 export function parsePath(path?: string | string[]) {
