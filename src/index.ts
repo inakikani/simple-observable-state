@@ -1,9 +1,16 @@
 import { BehaviorSubject, from, Observable } from "rxjs";
-import { pluck } from 'rxjs/operators'
+import { filter, pluck } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
 
 export function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
+}
+export function parsePath(path?: string | string[]) {
+    return path?.length > 0
+        ? Array.isArray(path)
+            ? path
+            : path.split('.')
+        : []
 }
 
 type ObservableStateOptions = {
@@ -31,10 +38,11 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         }
         if (options?.source) {
             this._source = options.source
-            if (options?.pluck && options.pluck.length !== 0) {
-                this._pluck = Array.isArray(options.pluck) ? options.pluck : [options.pluck]
+            this._pluck = parsePath(options?.pluck)
+            if (this._pluck.length > 0) {
                 this._source
                     .pipe(
+                        filter(s => !!s),
                         pluck(...this._pluck)
                     ).subscribe({
                         next: (s) => super.next(s as T),
@@ -53,11 +61,13 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 
     path<S>(path: string | string[]): ObservableState<S> {
-        if (!path || path.length === 0) { return this as ObservableState<any> }
-        const pathArr = Array.isArray(path) ? path : [path]
-        const childrenID = `${this._source?.id ?? ''}:${pathArr.toString()}`
+        const pathArr = parsePath(path)
 
+        if (pathArr.length === 0) { return this as ObservableState<any> }
+
+        const childrenID = `${this._source?.id ?? ''}:${pathArr.toString()}`
         const initialPathState = get(pathArr, this.getValue())
+
         return new ObservableState<S>(initialPathState, {
             id: childrenID,
             source: this,
@@ -70,16 +80,14 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 
     next(nState: any, path?: string | string[]) {
-        const pathArr = path?.length > 0
-            ? Array.isArray(path) ? path : [path]
-            : []
-        const fullPathArr = [...(this?._pluck ?? []), ...pathArr]
+        const pathArr = parsePath(path)
+        const fullPathArr = [...parsePath(this._pluck), ...pathArr]
 
-        if(this._source){
+        if (this._source) {
             this._source.next(nState, fullPathArr)
         } else {
             let newState = produce(this.getValue(), draft => {
-                if(pathArr?.length === 0){
+                if (pathArr?.length === 0) {
                     return nState ?? nothing
                 } else {
                     let propName = pathArr.pop()

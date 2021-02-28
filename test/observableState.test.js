@@ -1,8 +1,8 @@
-const { BehaviorSubject, Subject } = require("rxjs")
-const { take } = require("rxjs/operators")
+const { BehaviorSubject, Subject, of } = require("rxjs")
+const { take, pluck, timeout } = require("rxjs/operators")
 const { ObservableState } = require("../src")
 
-describe('creating ObservableState', () => {
+describe('new ObservableState', () => {
     test('no params', () => {
         expect(()=>{
             new ObservableState()
@@ -25,7 +25,9 @@ describe('creating ObservableState', () => {
             done()
         })
     })
-    test('test path method, no param', done => {
+})
+describe('ObservableState.path', () => {
+    test('path = undefined', done => {
         const _state = {a:{b:'foo'}}
         const state = new ObservableState(_state).path()
         state.subscribe(s => {
@@ -34,7 +36,16 @@ describe('creating ObservableState', () => {
             done()
         })
     })
-    test('test path method, with string path', done => {
+    test('path = empty array', done => {
+        const _state = {a:{b:'foo'}}
+        const state = new ObservableState(_state).path([])
+        state.subscribe(s => {
+            expect(s).toBe(_state)
+            expect(s.a.b).toEqual('foo')
+            done()
+        })
+    })
+    test('path = single prop string', done => {
         const _state = {a:{b:'foo'}}
         const state = new ObservableState(_state).path('a')
         state.subscribe(s => {
@@ -43,7 +54,25 @@ describe('creating ObservableState', () => {
             done()
         })
     })
-    test('test path method, with array path', done => {
+    test('path = single prop array', done => {
+        const _state = {a:{b:'foo'}}
+        const state = new ObservableState(_state).path(['a'])
+        state.subscribe(s => {
+            expect(s).toBe(_state.a)
+            expect(s.b).toEqual('foo')
+            done()
+        })
+    })
+    test('path = valid multi props string', done => {
+        const _state = {a:{b:'foo'}}
+        const state = new ObservableState(_state).path('a.b')
+        state.subscribe(s => {
+            expect(s).toBe(_state.a.b)
+            expect(s).toEqual('foo')
+            done()
+        })
+    })
+    test('path = valid multi props array', done => {
         const _state = {a:{b:'foo'}}
         const state = new ObservableState(_state).path(['a', 'b'])
         state.subscribe(s => {
@@ -52,6 +81,21 @@ describe('creating ObservableState', () => {
             done()
         })
     })
+    test('path = invalid single prop string', done => {
+        let next = jest.fn()
+        const _state = {a:{b:'foo'}}
+        const state = new ObservableState(_state).path('v')
+        state
+        .pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: err => {
+                expect(next).toHaveBeenCalledWith(undefined)
+                done()
+            }
+        })
+    })
+
 })
 
 describe('emitting new state', () => {
@@ -127,4 +171,33 @@ describe('emitting new state', () => {
 //         let s = new BehaviorSubject(1)
 //         let o1 = s.subscribe()
 //     })
+//    test('pluck', done => {
+//        let sub = of({a: 'foo', b: 'bar'})
+//        .pipe(
+//            pluck()
+//        )
+//        .subscribe({
+//            next: obj => {
+//                expect(obj).toEqual({a: 'foo', b: 'bar'})
+//                done()
+//            }
+//        })
+//    })
+// test('pluck filters or not', done => {
+    //     let s = {a: {b: 'foo'}}
+    //     let next = jest.fn()
+    //     const s$ = new BehaviorSubject(s)
+    //     s$.pipe(
+    //         take(2),
+    //         pluck('invalid')
+    //     )
+    //     .subscribe({
+    //         next: next,
+    //         complete: err => {
+    //             expect(next).not.toHaveBeenCalled()
+    //             done()
+    //         }
+    //     })
+    //     s$.next(s)
+    // })
 // })
