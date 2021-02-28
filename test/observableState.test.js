@@ -4,43 +4,63 @@ const { ObservableState } = require("../src")
 
 describe('new ObservableState', () => {
     
-    test('does not throw', () => {
+    test('does not throw initial = undefined', () => {
         expect(()=>{
             new ObservableState()
         }).not.toThrow()
+    })  
+    test('does not throw initial = true', () => {
         expect(()=>{
             new ObservableState(true)
         }).not.toThrow()
+    })  
+    test('does not throw initial = null', () => {
         expect(()=>{
             new ObservableState(null)
         }).not.toThrow()
+    })  
+    test('does not throw initial = void 0', () => {
         expect(()=>{
             new ObservableState(void 0)
         }).not.toThrow()
+    })  
+    test('does not throw initial = 0', () => {
         expect(()=>{
             new ObservableState(0)
         }).not.toThrow()
+    })  
+    test('does not throw initial = 1', () => {
         expect(()=>{
             new ObservableState(1)
         }).not.toThrow()
+    })  
+    test('does not throw initial = "1"', () => {
         expect(()=>{
             new ObservableState('1')
         }).not.toThrow()
+    })  
+    test('does not throw initial = new Object()', () => {
         expect(()=>{
             new ObservableState(new Object())
         }).not.toThrow()
+    })  
+    test('does not throw initial = []', () => {
         expect(()=>{
             new ObservableState([])
         }).not.toThrow()
+    })  
+    test('does not throw initial = [1]', () => {
         expect(()=>{
             new ObservableState([1])
         }).not.toThrow()
+    })  
+    test('does not throw initial = {a:{b:0}}', () => {
         expect(()=>{
             new ObservableState({a:{b:0}})
         }).not.toThrow()
     })
 
-    test('does throw', () => {
+    test('does throw initial = function', () => {
         expect(()=>{
             new ObservableState(() => {})
         }).toThrow("initial state cannot be a function")
@@ -51,7 +71,6 @@ describe("ObservableState.subscribe", () => {
     
     // throw and not throw is all over the place ... obs.subscribe works in mysterious ways
     test('does throw', () => {
-
         expect(() => {
             new ObservableState(100).subscribe(1)
         }).toThrow()
@@ -85,31 +104,115 @@ describe("ObservableState.subscribe", () => {
         }).not.toThrow()
     })
 
-    test('value emitted on subscribe', done => {
 
+    test('value emitted on subscribe no initial', done => {
         let next = jest.fn()
-        concat(
-            new ObservableState(void 0).pipe(take(1)),
-            new ObservableState(1).pipe(take(1)),
-            new ObservableState(true).pipe(take(1)),
-            new ObservableState(false).pipe(take(1)),
-            new ObservableState([]).pipe(take(1)),
-            new ObservableState({}).pipe(take(1)),
-            new ObservableState('str').pipe(take(1)),
-            new ObservableState({a: {b: 1}}).pipe(take(1)),
-            new ObservableState(0).pipe(take(1)),
-        ).subscribe({
+        new ObservableState()
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(void 0)
+                    done()
+                }
+            })
+    })
+
+    test('value emitted on subscribe = void 0', done => {
+        let next = jest.fn()
+        new ObservableState(void 0).pipe(take(1))
+        .subscribe({
             next: next,
             complete: () => {
-                expect(next).toHaveBeenNthCalledWith(1, void 0)
-                expect(next).toHaveBeenNthCalledWith(2, 1)
-                expect(next).toHaveBeenNthCalledWith(3, true)
-                expect(next).toHaveBeenNthCalledWith(4, false)
-                expect(next).toHaveBeenNthCalledWith(5, [])
-                expect(next).toHaveBeenNthCalledWith(6, {})
-                expect(next).toHaveBeenNthCalledWith(7, 'str')
-                expect(next).toHaveBeenNthCalledWith(8, {a: {b: 1}})
-                expect(next).toHaveBeenNthCalledWith(9, 0)
+                expect(next).toHaveBeenCalledWith(void 0)
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = 1', done => {
+        let next = jest.fn()
+        new ObservableState(1).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith(1)
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = true', done => {
+        let next = jest.fn()
+        new ObservableState(true).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith(true)
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = false', done => {
+        let next = jest.fn()
+        new ObservableState(false).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith(false)
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = []', done => {
+        let next = jest.fn()
+        new ObservableState([]).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith([])
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = {}', done => {
+        let next = jest.fn()
+        new ObservableState({}).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith({})
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = "str"', done => {
+        let next = jest.fn()
+        new ObservableState('str').pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith('str')
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = {a: {b: 1}}', done => {
+        let next = jest.fn()
+        new ObservableState({a: {b: 1}}).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith({a: {b: 1}})
+                done()
+            }
+        })
+    })
+    test('value emitted on subscribe = 0', done => {
+        let next = jest.fn()
+        new ObservableState(0).pipe(take(1))
+        .subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenCalledWith(0)
                 done()
             }
         })
@@ -118,98 +221,283 @@ describe("ObservableState.subscribe", () => {
 })
 
 describe('ObservableState.next', () => {
-    test('does not throw', () => {
+        
+    test('does not throw - no value', () => {
         expect(() => {
             new ObservableState().next()
         }).not.toThrow()
+    })    
+    test('does not throw - next void 0', () => {
         expect(() => {
             new ObservableState().next(void 0)
         }).not.toThrow()
+    })
+    test('does not throw - next null', () => {
         expect(() => {
             new ObservableState().next(null)
         }).not.toThrow()
+    })
+    test('does not throw - next 0', () => {
         expect(() => {
             new ObservableState().next(0)
         }).not.toThrow()
+    })
+    test('does not throw - next 1', () => {
         expect(() => {
             new ObservableState().next(1)
         }).not.toThrow()
+    })
+    test('does not throw - next -1', () => {
         expect(() => {
             new ObservableState().next(-1)
         }).not.toThrow()
+    })
+    test('does not throw - next 1.5', () => {
         expect(() => {
             new ObservableState().next(1.5)
         }).not.toThrow()
+    })
+    test('does not throw - next true', () => {
         expect(() => {
             new ObservableState().next(true)
         }).not.toThrow()
+    })
+    test('does not throw - next false', () => {
         expect(() => {
             new ObservableState().next(false)
         }).not.toThrow()
+    })
+    test('does not throw - next ""', () => {
         expect(() => {
             new ObservableState().next('')
         }).not.toThrow()
+    })
+    test('does not throw - next {}', () => {
         expect(() => {
             new ObservableState().next({})
         }).not.toThrow()
+    })
+    test('does not throw - next {a:1}', () => {
         expect(() => {
             new ObservableState().next({a:1})
         }).not.toThrow()
+    })
+    test('does not throw - next []', () => {
         expect(() => {
             new ObservableState().next([])
         }).not.toThrow()
+    })
+    test('does not throw - next ()=>{}', () => {
         expect(() => {
             new ObservableState().next(()=>{})
         }).not.toThrow()
     })
 
-    test('emits correct value', done => {
+
+    test('emits correct value = no value', done => {
+        let next = jest.fn()
+        new ObservableState().next()
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(undefined)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = void 0', done => {
+        let next = jest.fn()
+        new ObservableState().next(void 0)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(void 0)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = null', done => {
+        let next = jest.fn()
+        new ObservableState().next(null)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(null)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = 0', done => {
+        let next = jest.fn()
+        new ObservableState().next(0)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(0)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = 1', done => {
+        let next = jest.fn()
+        new ObservableState().next(1)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(1)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = -1', done => {
+        let next = jest.fn()
+        new ObservableState().next(-1)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(-1)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = 1.5', done => {
+        let next = jest.fn()
+        new ObservableState().next(1.5)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(1.5)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = true', done => {
+        let next = jest.fn()
+        new ObservableState().next(true)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(true)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = false', done => {
+        let next = jest.fn()
+        new ObservableState().next(false)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(false)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = ""', done => {
+        let next = jest.fn()
+        new ObservableState().next('')
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith('')
+                    done()
+                }
+            })
+    })
+    test('emits correct value = {}', done => {
+        let next = jest.fn()
+        new ObservableState().next({})
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith({})
+                    done()
+                }
+            })
+    })
+    test('emits correct value = {a:1}', done => {
+        let next = jest.fn()
+        new ObservableState().next({a:1})
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith({a:1})
+                    done()
+                }
+            })
+    })
+    test('emits correct value = []', done => {
+        let next = jest.fn()
+        new ObservableState().next([])
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith([])
+                    done()
+                }
+            })
+    })
+    test('emits correct value = _date', done => {
         let next = jest.fn()
         let _date = new Date()
-
-        let _obsArr = [
-            new ObservableState().next().pipe(take(1)),
-            new ObservableState().next(void 0).pipe(take(1)),
-            new ObservableState().next(null).pipe(take(1)),
-            new ObservableState().next(0).pipe(take(1)),
-            new ObservableState().next(1).pipe(take(1)),
-            new ObservableState().next(-1).pipe(take(1)),
-            new ObservableState().next(1.5).pipe(take(1)),
-            new ObservableState().next(true).pipe(take(1)),
-            new ObservableState().next(false).pipe(take(1)),
-            new ObservableState().next('').pipe(take(1)),
-            new ObservableState().next({}).pipe(take(1)),
-            new ObservableState().next({a:1}).pipe(take(1)),
-            new ObservableState().next([]).pipe(take(1)),
-            new ObservableState().next(_date).pipe(take(1)),
-            new ObservableState().next(()=>{}).pipe(take(1)),
-            new ObservableState().next(()=>4).pipe(take(1)),
-            new ObservableState().next(1).next(2).pipe(take(1)),
-        ]
-        concat(..._obsArr)
-        .subscribe({
-            next: next,
-            complete: () => {
-                expect(next).toHaveBeenNthCalledWith(1, undefined)
-                expect(next).toHaveBeenNthCalledWith(2, void 0)
-                expect(next).toHaveBeenNthCalledWith(3, null)
-                expect(next).toHaveBeenNthCalledWith(4, 0)
-                expect(next).toHaveBeenNthCalledWith(5, 1)
-                expect(next).toHaveBeenNthCalledWith(6, -1)
-                expect(next).toHaveBeenNthCalledWith(7, 1.5)
-                expect(next).toHaveBeenNthCalledWith(8, true)
-                expect(next).toHaveBeenNthCalledWith(9, false)
-                expect(next).toHaveBeenNthCalledWith(10, '')
-                expect(next).toHaveBeenNthCalledWith(11, {})
-                expect(next).toHaveBeenNthCalledWith(12, {a:1})
-                expect(next).toHaveBeenNthCalledWith(13, [])
-                expect(next).toHaveBeenNthCalledWith(14, _date)
-                expect(next).toHaveBeenNthCalledWith(15, undefined)
-                expect(next).toHaveBeenNthCalledWith(16, 4)
-                expect(next).toHaveBeenNthCalledWith(17, 2)
-                done()
-            }
-        })
+        new ObservableState().next(_date)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    done()
+                    expect(next).toHaveBeenCalledWith(_date)
+                }
+            })
+    })
+    test('emits correct value = ()=>{}', done => {
+        let next = jest.fn()
+        new ObservableState().next(()=>{})
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(undefined)
+                    done()
+                }
+            })
+    })
+    test('emits correct value = ()=>4', done => {
+        let next = jest.fn()
+        new ObservableState().next(()=>4)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(4)
+                    done()
+                }
+            })
+    })
+    test('emits correct value (chaining) = next(1).next(2)', done => {
+        let next = jest.fn()
+        new ObservableState().next(1).next(2)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(2)
+                    done()
+                }
+            })
     })
 
     test('with existing path', done => {
