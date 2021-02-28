@@ -16,15 +16,13 @@ export function parsePath(path?: string | string[]) {
     ]
 }
 
-type ObservableStateOptions = {
+export type ObservableStateOptions = {
     id: string;
     source?: ObservableState<any>,
     async?: Promise<any>,
     pluck?: string[],
     ignoreUndefinedFromSource?: boolean
 }
-
-export let observableStatesMap = new Map()
 
 export class ObservableState<T> extends BehaviorSubject<T> {
 
