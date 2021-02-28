@@ -6,11 +6,14 @@ export function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
 }
 export function parsePath(path?: string | string[]) {
-    return path?.length > 0
-        ? Array.isArray(path)
-            ? path
-            : path.split('.')
-        : []
+    // return a new array each time
+    return [
+        ...path?.length > 0
+            ? Array.isArray(path)
+                ? path
+                : path.split('.')
+            : []
+    ]
 }
 
 type ObservableStateOptions = {
@@ -65,11 +68,11 @@ export class ObservableState<T> extends BehaviorSubject<T> {
 
         if (pathArr.length === 0) { return this as ObservableState<any> }
 
-        const childrenID = `${this._source?.id ?? ''}:${pathArr.toString()}`
+        const ID = `${this._source?.id ?? ''}:${pathArr.toString()}`
         const initialPathState = get(pathArr, this.getValue())
 
         return new ObservableState<S>(initialPathState, {
-            id: childrenID,
+            id: ID,
             source: this,
             pluck: pathArr
         })
@@ -88,27 +91,24 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         } else {
             let newState = produce(this.getValue(), draft => {
                 if (pathArr?.length === 0) {
-                    return nState ?? nothing
+                    if(typeof nState === 'function'){
+                        let reducedState = nState(draft)
+                        return reducedState ?? nothing
+                    } else {
+                        return nState ?? nothing
+                    }
                 } else {
                     let propName = pathArr.pop()
-                    get(pathArr, draft)[propName] = nState
+                    let _old = get(pathArr, draft)[propName]
+                    if(typeof nState === 'function'){
+                        let reducedState = nState(_old)
+                        get(pathArr, draft)[propName] = reducedState
+                    } else {
+                        get(pathArr, draft)[propName] = nState
+                    }
                 }
             })
             super.next(newState as T)
         }
     }
 }
-
-export function sos<T>(id: string, init: any, options?: ObservableStateOptions): ObservableState<T> {
-    if (!observableStatesMap.has(id)) {
-        observableStatesMap.set(id, new ObservableState(init, {
-            id: id,
-            ...options,
-        }))
-    }
-
-    console.log('states', observableStatesMap)
-    return observableStatesMap.get(id)
-}
-
-export default sos
