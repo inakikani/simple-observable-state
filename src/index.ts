@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { filter, pluck } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
+import { useEffect, useMemo, useState } from "react";
 
 function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
@@ -114,3 +115,28 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         return this
     }
 }
+
+export function useObservableState(init:any, options?:ObservableStateOptions){
+
+    const [state, setState] = useState(init instanceof ObservableState ? undefined : init)
+    
+    let state$ = useMemo( () => {
+      return init instanceof ObservableState
+      ? init
+      : new ObservableState(init, options)
+    }, [])
+  
+    useEffect( () => {
+      
+      let sub = state$.subscribe({
+        next: (newState:any) => {setState(newState)}
+      })
+  
+      return () => {
+        sub.unsubscribe()
+      }
+  
+    }, [options, state$])
+  
+    return [state, state$]
+  }
