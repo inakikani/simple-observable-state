@@ -17,6 +17,9 @@
       // silence some TS warning when running jest
       "esModuleInterop": true,
     },
+    "exclude": [
+      "./bkp"
+    ],
     "include": [
       "./src"
     ]

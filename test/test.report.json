@@ -1,0 +1,204 @@
+{
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 1,
+    "numPassedTests": 16,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": 0,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 1,
+    "numTotalTests": 16,
+    "openHandles": [],
+    "snapshot": {
+        "added": 0,
+        "didUpdate": false,
+        "failure": false,
+        "filesAdded": 0,
+        "filesRemoved": 0,
+        "filesRemovedList": [],
+        "filesUnmatched": 0,
+        "filesUpdated": 0,
+        "matched": 0,
+        "total": 0,
+        "unchecked": 0,
+        "uncheckedKeysByFile": [],
+        "unmatched": 0,
+        "updated": 0
+    },
+    "startTime": 1614547999911,
+    "success": true,
+    "testResults": [
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "new ObservableState"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "new ObservableState does not throw",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does not throw"
+                },
+                {
+                    "ancestorTitles": [
+                        "new ObservableState"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "new ObservableState does throw",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does throw"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.subscribe"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.subscribe does throw",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does throw"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.subscribe"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.subscribe does not throw",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does not throw"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.subscribe"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.subscribe value emitted on subscribe",
+                    "location": null,
+                    "status": "passed",
+                    "title": "value emitted on subscribe"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.next"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.next does not throw",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does not throw"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.next"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.next emits correct value",
+                    "location": null,
+                    "status": "passed",
+                    "title": "emits correct value"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.next"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.next with existing path",
+                    "location": null,
+                    "status": "passed",
+                    "title": "with existing path"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.next"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.next with unexisting path",
+                    "location": null,
+                    "status": "passed",
+                    "title": "with unexisting path"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = undefined",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = undefined"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = empty array",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = empty array"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = single prop string",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = single prop string"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = single prop array",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = single prop array"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = valid multi props string",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = valid multi props string"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = valid multi props array",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = valid multi props array"
+                },
+                {
+                    "ancestorTitles": [
+                        "ObservableState.path"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "ObservableState.path path = invalid single prop string",
+                    "location": null,
+                    "status": "passed",
+                    "title": "path = invalid single prop string"
+                }
+            ],
+            "endTime": 1614548001495,
+            "message": "",
+            "name": "/Users/jmr/Work/libraries/npm/simple-observable-state/test/ObservableState.test.js",
+            "startTime": 1614548000557,
+            "status": "passed",
+            "summary": ""
+        }
+    ],
+    "wasInterrupted": false
+}
