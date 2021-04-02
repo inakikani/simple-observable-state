@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { filter, pluck } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
+export * as v1 from './v1'
 
 function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
