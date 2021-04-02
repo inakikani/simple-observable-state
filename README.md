@@ -44,8 +44,8 @@ function addTodo(){
 
 ```
 
-## [React & Simple Observable State]([https://link](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State))
-Check this [WIKI PAGE]([https://link](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State)) for a working example of React and SOS working together.
+## [React & Simple Observable State](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State)
+Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State) for a working example of React and SOS working together.
 
 
 ## Reference
