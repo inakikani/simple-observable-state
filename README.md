@@ -1,13 +1,14 @@
-# Observable State
+# Simple Observable State
+Expressive and boilerplate free state management, with immutability baked in.
 
-# Installation
+## Installation
 
 Available on npm 
 ```
 npm install simple-observable-state
 ```
 
-# Get Started
+## Get Started
 
 ```javascript
 
@@ -37,31 +38,35 @@ function changeInputText(txt){
 function addTodo(){
     // next method also allows you to provide a function ! The function is given the current state, ready for you to change however needed
     todosArr$.next(function(todos){
-        todos.push(todos$.path('newTodoInputText').value)
+        todos.push(todos$.path('newTodoInputText').getValue())
     })
 }
 
 ```
 
-# Reference
+## [React & Simple Observable State]([https://link](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State))
+Check this [WIKI PAGE]([https://link](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State)) for a working example of React and SOS working together.
 
-## ObservableState class
+
+## Reference
+
+### ObservableState class
 
 *extends rxjs.BehaviorSubject*
 
-### **constructor(initial_state, options?)**
+#### **constructor(initial_state, options?)**
 
 - **initial_state**:`any` - the initial value for the new ObservableState. 
 - **options**:`OptionsObject` - an optional object with options to create new ObservableState (used mostly internally)
 
-### **OptionsObject ({id, source?, async?, pluck?, ignoreUndefinedFromSource?})**
+#### **OptionsObject ({id, source?, async?, pluck?, ignoreUndefinedFromSource?})**
 - id: string;
 - source?: ObservableState<any>,
 - async?: Promise<any>,
 - pluck?: string[],
 - ignoreUndefinedFromSource?: boolean
 
-### **observableState.path(path: string | string[])**
+#### **observableState.path(path: string | string[])**
 Returns a new ObservableState derived from the source `observableState`.
 `path` accepts dot notation in a string or an array of strings :
 ```javascript
@@ -89,7 +94,7 @@ value$.next('Goodbye world')
 // $> state = {deep: {value:'Goodbye world'}}
 
 ```
-### **observableState.next(any & StateProducerFunction)**
+#### **observableState.next(any & StateProducerFunction)**
 Returns `observableState` to allow method chaining.  
 `next` is used to modify the last state value from `osbervableState`.  
 `next` accepts any value that will be the next emitted state.   
@@ -120,14 +125,14 @@ state$
 
 ```
 
-### **observableState.subscribe(subscriber)**
+#### **observableState.subscribe(subscriber)**
 Subscribe to ObservableState. Use this function just as you would a regular rxjs.Observable
-### **observableState.value**
+#### **observableState.value**
 Inherited from rxjs.BehaviorSubject. Handy to get the current state value
-### **observableState.getValue()**
+#### **observableState.getValue()**
 Inherited from rxjs.BehaviorSubject. Handy to get the current state value
 
-# Develop
+## Develop
 This package is developed with Typescript.
 
 Start watcher to run test suite on code changes :
@@ -135,13 +140,13 @@ Start watcher to run test suite on code changes :
 npm run dev
 ```
 
-## Build
+### Build
 Builds in `dist/` folder
 ```
 npm run build
 ```
 
-## Test
+### Test
 The library comes with a Jest test suite.
 ```
 npm run test
@@ -149,5 +154,5 @@ npm run test
 npm run dev
 ```
 
-# Credits
+## Credits
 ISC @ Joel Rafalimanana
