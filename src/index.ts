@@ -1,7 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { filter, pluck } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
-import { useEffect, useMemo, useState } from "react";
 
 function get(path, obj) {
     return path.reduce((src, str) => src?.[str] ?? null, obj)
@@ -85,10 +84,10 @@ export class ObservableState<T> extends BehaviorSubject<T> {
 
     next(nState: any, path?: string | string[]) {
         const pathArr = parsePath(path)
-        const fullPathArr = [...parsePath(this._pluck), ...pathArr]
+        const concatenatedPathArr = [...parsePath(this._pluck), ...pathArr]
 
         if (this._source) {
-            this._source.next(nState, fullPathArr)
+            this._source.next(nState, concatenatedPathArr)
         } else {
             let newState = produce(super.getValue(), draft => {
                 if (pathArr?.length === 0) {
@@ -116,27 +115,27 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 }
 
-export function useObservableState(init:any, options?:ObservableStateOptions){
+// export function useObservableState(init:any, options?:ObservableStateOptions){
 
-    const [state, setState] = useState(init instanceof ObservableState ? undefined : init)
+//     const [state, setState] = useState(init instanceof ObservableState ? undefined : init)
     
-    let state$ = useMemo( () => {
-      return init instanceof ObservableState
-      ? init
-      : new ObservableState(init, options)
-    }, [])
+//     let state$ = useMemo( () => {
+//       return init instanceof ObservableState
+//       ? init
+//       : new ObservableState(init, options)
+//     }, [])
   
-    useEffect( () => {
+//     useEffect( () => {
       
-      let sub = state$.subscribe({
-        next: (newState:any) => {setState(newState)}
-      })
+//       let sub = state$.subscribe({
+//         next: (newState:any) => {setState(newState)}
+//       })
   
-      return () => {
-        sub.unsubscribe()
-      }
+//       return () => {
+//         sub.unsubscribe()
+//       }
   
-    }, [options, state$])
+//     }, [options, state$])
   
-    return [state, state$]
-  }
+//     return [state, state$]
+//   }

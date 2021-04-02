@@ -651,6 +651,15 @@ describe('ObservableState.path', () => {
             done()
         })
     })
+    test('path = valid array index str', done => {
+        const _state = ['value']
+        const state = new ObservableState(_state).path('0')
+        state.subscribe(s => {
+            expect(s).toBe(_state[0])
+            expect(s).toEqual('value')
+            done()
+        })
+    })
     test('path = invalid single prop string', done => {
         let next = jest.fn()
         const _state = {a:{b:'foo'}}
@@ -666,4 +675,38 @@ describe('ObservableState.path', () => {
         })
     })
 
+})
+
+describe('Subscription complex test cases', () => {
+    test('deep state change is emitted to all ObservableStates targeting the same value', done => {
+        let next = jest.fn()
+        let next2 = jest.fn()
+        
+        const _state = ['value']
+        const state = new ObservableState(_state)
+        const first$ = state.path('0')
+        const second$ = state.path('0')
+
+        first$.pipe(
+            take(2)
+        ).subscribe({
+            next: next,
+            complete: () => {
+                expect(next).toHaveBeenNthCalledWith(1, 'value')
+                expect(next).toHaveBeenNthCalledWith(2, 'xxx')
+                expect(next2).toHaveBeenNthCalledWith(1, undefined)
+                expect(next2).toHaveBeenCalledTimes(1)
+                done()
+            }
+        })
+
+        state.path('1').pipe(
+            take(2)
+        ).subscribe({
+            next: next2
+        })
+
+        second$.next('xxx')
+
+    })
 })
