@@ -57,7 +57,7 @@ Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki
 #### **constructor(initial_state, options?)**
 
 - **initial_state**:`any` - the initial value for the new ObservableState. 
-- **options**:`OptionsObject` - an optional object with options to create new ObservableState (used mostly internally)
+- **options**:`OptionsObject` - an optional object with options to create new ObservableState (used internally - you likely don't need to use any options)
 
 #### **OptionsObject ({id, source?, async?, pluck?, ignoreUndefinedFromSource?})**
 - id: string;
@@ -67,8 +67,9 @@ Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki
 - ignoreUndefinedFromSource?: boolean
 
 #### **observableState.path(path: string | string[])**
-Returns a new ObservableState derived from the source `observableState`.
-`path` accepts dot notation in a string or an array of strings :
+Returns a new observableState derived from the source `observableState`.  
+The new osbservableState emits the value found at `path` in the source observableState.  
+`path` accepts dot notation string or an array of strings :
 ```javascript
 const state$ = new ObservableState({deep: {value:'hello world'}})
 const value$ = state$.path('deep.value')
