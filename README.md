@@ -8,7 +8,7 @@ Available on npm
 npm install simple-observable-state
 ```
 
-## What is looks like
+## What it looks like
 ```typescript
 // an input with simple-observable-state, with react component, using custom hook useObservableState
 function Input({ textObs, ...props }) {
