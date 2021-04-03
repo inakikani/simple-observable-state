@@ -8,6 +8,38 @@ Available on npm
 npm install simple-observable-state
 ```
 
+## What is looks like
+```typescript
+// an input with simple-observable-state, with react component, using custom hook useObservableState
+function Input({ textObs, ...props }) {
+    return <input
+        type="text"
+        value={textObs.getValue()}
+        onChange={e => textObs.next(e.target.value)}
+        {...props}
+        >
+    </input>
+}
+
+// using the Input component
+function Form() {
+    const [form, formObs] = useObservableState({ username: '', password: '' })
+    const usernameObs = useMemo(() => formObs.path('username'),[])
+    const passwordObs = useMemo(() => formObs.path('password'),[])
+
+    return <div>
+        {form.username} : {form.password}
+        <form
+            onSubmit={e => { e.preventDefault(); console.log(form) }}
+        >
+            <Input textObs={usernameObs} />
+            <Input textObs={passwordObs} />
+        </form>
+    </div>
+}
+
+```
+
 ## Get Started
 
 ```javascript
