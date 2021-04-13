@@ -709,4 +709,88 @@ describe('Subscription complex test cases', () => {
         second$.next('xxx')
 
     })
+
+    test('all subscribers get notified of state changes', done => {
+        let next = jest.fn()
+        let nextParent = jest.fn()
+        let nextValue1 = jest.fn()
+        let nextValue1bis = jest.fn()
+        let nextValue2 = jest.fn()
+        let nextConstant = jest.fn()
+
+        const _state = {
+            deep: {
+                value: 'hello',
+                constant: 'foo'
+            }
+        }
+        const state$ = new ObservableState(_state)
+
+        let parent$ = state$.path('deep')
+        let value1$ = parent$.path('value')
+        let value2$ = state$.path('deep.value')
+        let constant$ = parent$.path('constant')
+
+        parent$.subscribe(nextParent)
+        value1$.subscribe(nextValue1)
+        value1$.subscribe(nextValue1bis)
+        value2$.subscribe(nextValue2)
+        constant$.subscribe(nextConstant)
+
+        state$
+            .pipe(
+                takeWhile(x => x !== 'END')
+            )
+            .subscribe({
+                next: val => {
+                    let v1$ = parent$.path('value')
+                    expect(val).toEqual(state$.getValue())
+                    expect(v1$.getValue()).toEqual(state$.path('deep.value').getValue())
+                    expect(v1$.getValue()).toEqual(val.deep.value)
+                },
+                complete: () => {
+                    // initial subscribe
+                    expect(nextParent).toHaveBeenNthCalledWith(1,{value: 'hello', constant: 'foo'})
+                    expect(nextValue1).toHaveBeenNthCalledWith(1, 'hello')
+                    expect(nextValue2).toHaveBeenNthCalledWith(1, 'hello')
+                    expect(nextConstant).toHaveBeenNthCalledWith(1, 'foo')
+                    
+                    // first parent changes : value : bye
+                    expect(nextParent).toHaveBeenNthCalledWith(2,{value: 'bye', constant: 'foo'})
+                    expect(nextValue1).toHaveBeenNthCalledWith(2,'bye')
+                    expect(nextValue2).toHaveBeenNthCalledWith(2,'bye')
+                    expect(nextConstant).toHaveBeenNthCalledWith(2, 'foo')
+
+                    // value1$.next(42)
+                    expect(nextParent).toHaveBeenNthCalledWith(3,{value: 42, constant: 'foo'})
+                    expect(nextValue1).toHaveBeenNthCalledWith(3,42)
+                    expect(nextValue2).toHaveBeenNthCalledWith(3,42)
+                    expect(nextConstant).toHaveBeenNthCalledWith(3, 'foo')
+                    
+                    // value2$.next(42)
+                    expect(nextParent).toHaveBeenNthCalledWith(4,{value: 42, constant: 'foo'})
+                    expect(nextValue1).toHaveBeenNthCalledWith(4,42)
+                    expect(nextValue2).toHaveBeenNthCalledWith(4,42)
+                    expect(nextConstant).toHaveBeenNthCalledWith(4, 'foo')
+
+                    // value2$.next({a: true})
+                    expect(nextParent).toHaveBeenNthCalledWith(5,{value: {a: true}, constant: 'foo'})
+                    expect(nextValue1).toHaveBeenNthCalledWith(5,{a: true})
+                    expect(nextValue1bis).toHaveBeenNthCalledWith(5,{a: true})
+                    expect(nextValue2).toHaveBeenNthCalledWith(5,{a: true})
+                    expect(nextConstant).toHaveBeenNthCalledWith(5, 'foo')
+
+
+                    // Test is finished
+                    done()
+                }
+            })
+
+        // change state 
+        state$.next({deep: {value: 'bye', constant: 'foo'}})
+        value1$.next(42)
+        value2$.next(42)
+        value2$.next({a: true})
+        state$.next('END')
+    })
 })
