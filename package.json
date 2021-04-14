@@ -1,6 +1,6 @@
 {
   "name": "simple-observable-state",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "manage state with observables",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -27,6 +27,10 @@
     "typescript": "^3.9.3",
     "webpack": "^5.0.0-beta.17",
     "webpack-cli": "^3.3.11"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "dependencies": {
     "immer": "^8.0.1",
