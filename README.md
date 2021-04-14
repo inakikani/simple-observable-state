@@ -82,7 +82,7 @@ Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki
 ### useObservableState custom hook
 
 ```javascript
-import {useObservableState} from 'simple-observable-state/dist/esm/react/useObservableState'
+import {useObservableState} from 'simple-observable-state'
 ```
 
 
