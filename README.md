@@ -11,11 +11,11 @@ npm install simple-observable-state
 ## What it looks like
 ```typescript
 // an input with simple-observable-state, with react component, using custom hook useObservableState
-function Input({ textObs, ...props }) {
+function Input({ textObsState, ...props }) {
     return <input
         type="text"
-        value={textObs.getValue()}
-        onChange={e => textObs.next(e.target.value)}
+        value={textObsState.getValue()}
+        onChange={e => textObsState.next(e.target.value)}
         {...props}
         >
     </input>
@@ -32,8 +32,8 @@ function Form() {
         <form
             onSubmit={e => { e.preventDefault(); console.log(form) }}
         >
-            <Input textObs={usernameObs} />
-            <Input textObs={passwordObs} />
+            <Input textObsState={usernameObs} />
+            <Input textObsState={passwordObs} />
         </form>
     </div>
 }
@@ -77,7 +77,13 @@ function addTodo(){
 ```
 
 ## [React & Simple Observable State](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State)
-Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State) for a working example of React and SOS working together.
+Check this [WIKI PAGE](https://github.com/inakikani/simple-observable-state/wiki/React-&-Simple-Observable-State) for a working example of React and SOS working together.  
+
+### useObservableState custom hook
+
+```javascript
+import {useObservableState} from 'simple-observable-state/dist/esm/react/useObservableState'
+```
 
 
 ## Reference
