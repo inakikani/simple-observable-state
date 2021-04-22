@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react"
 import { ObservableState } from ".."
 
-export function useObservableState(state: any) {
-    
-    const initial_state = useMemo(() => {
-        return state instanceof ObservableState 
-            ? [state.getValue(), state] 
-            : [state, new ObservableState(state)]
+export function useObservableState<T>(state: T): [T, ObservableState<T>] {
+    const initial_state = useMemo<[any, ObservableState<any>]>(() => {
+        const _state = typeof state === 'function' 
+            ? state()
+            : state
+        return _state instanceof ObservableState 
+            ? [_state.getValue(), _state]
+            : [_state, new ObservableState<T>(_state)]
     }, [state])
 
     const [stateValue, setStateValue] = useState(initial_state)
