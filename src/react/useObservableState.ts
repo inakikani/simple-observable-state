@@ -15,7 +15,7 @@ export function useObservableState<T>(state: T): [T, ObservableState<T>] {
 
     useEffect(() => {
         const stateObs = stateValue[1]
-        let sub = stateObs.next(stateObs.getValue()).subscribe(s => setStateValue([s, stateObs]))
+        let sub = stateObs.subscribe(s => setStateValue([s, stateObs]))
 
         return () => { sub.unsubscribe() }
     }, [state])
