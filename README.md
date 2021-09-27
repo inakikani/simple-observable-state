@@ -11,11 +11,11 @@ npm install simple-observable-state
 ## What it looks like
 ```typescript
 // an input with simple-observable-state, with react component, using custom hook useObservableState
-function Input({ textObsState, ...props }) {
+function Input({ observableState, ...props }) {
     return <input
         type="text"
-        value={textObsState.getValue()}
-        onChange={e => textObsState.next(e.target.value)}
+        value={observableState.getValue()}
+        onChange={e => observableState.next(e.target.value)}
         {...props}
         >
     </input>
@@ -23,17 +23,17 @@ function Input({ textObsState, ...props }) {
 
 // using the Input component
 function Form() {
-    const [form, formObs] = useObservableState({ username: '', password: '' })
-    const usernameObs = useMemo(() => formObs.path('username'),[])
-    const passwordObs = useMemo(() => formObs.path('password'),[])
+    const [formObject, formObservableState] = useObservableState({ username: '', password: '' })
+    const usernameObs = useMemo(() => formObservableState.path('username'),[])
+    const passwordObs = useMemo(() => formObservableState.path('password'),[])
 
     return <div>
-        {form.username} : {form.password}
+        {formObject.username} : {formObject.password}
         <form
             onSubmit={e => { e.preventDefault(); console.log(form) }}
         >
-            <Input textObsState={usernameObs} />
-            <Input textObsState={passwordObs} />
+            <Input observableState={usernameObs} />
+            <Input observableState={passwordObs} />
         </form>
     </div>
 }
@@ -47,31 +47,40 @@ function Form() {
 // define initial state
 const initial_todos = {
     todos: {
-        deep: {arr: []}
+        list: [],
+        name: ''
     },
-    newTodoInputText: ''
+    newTodoInputValue: ''
+}
+
+const stored_todos = {
+    list: ['foo', 'bar'],
+    name: 'My first todo list'
 }
 
 // create a new Observable State with initial state value
 const todos$ = new ObservableState(initial_todos)
 
-// path returns a new ObservableState for the target state value
-const inputText$  = todosObs.path('newTodoInputText') 
-// path lets you target deep state values
-const todosArr$ = todosObs.path('todos.deep.arr')
-// you can even use path to set new properties
-const formName$ = todos$.path('formName').next('What do you have to do ?')
+// traverse your observableState property tree
+const todosList$ = todos$.path('todos.list')
+const newTodo$  = todos$.path('newTodoInputValue')
+
+// set new property on your state
+const listName$ = todos$.path('nameTextInputValue').next('January goals:')
 
 // push next state value with observableState.next()
+// subscribers will get the new immutable state value automatically, anywhere
 function changeInputText(txt){
-    // next method, allows you push your next state to all subscribers, just like a regular Subject
-    inputText$.next(txt) 
+    newTodo$.next(txt)
 }
+
+// provide a state reducer to create the next state value.
 function addTodo(){
-    // next method also allows you to provide a function ! The function is given the current state, ready for you to change however needed
-    todosArr$.next(function(todos){
+    // reducer function is called with the current state value
+    cons addTodoReducer = function(todos){
         todos.push(todos$.path('newTodoInputText').getValue())
-    })
+    }
+    todosList$.next(addTodoReducer)
 }
 
 ```
@@ -137,7 +146,10 @@ value$.next('Goodbye world')
 Returns `observableState` to allow method chaining.  
 `next` is used to modify the last state value from `osbervableState`.  
 `next` accepts any value that will be the next emitted state.   
-`next` also accepts a function as a parameter, it is called with the last state value changes to the state here will be reflected in the next emitted state.
+`next` also accepts a function as a parameter, it is called with the last state value.   
+> All changes to the state inside StateProducerFunction will be reflected in the next emitted state. Unless StateProducerFunction returns an object; in which case the next emitted state will be that object.  
+
+> note: this library uses **Immer** to create immutable states. StateProducerFunction is essentially an Immer *Producer* function. 
 
 ```javascript
 const state$ = new ObservableState({deep: {value:'hello world'}})
@@ -149,9 +161,6 @@ state$.next(function(state){
 })
 
 ```
-
-Note: notice that the function does not return a new state ! Under the hood, the value/function is wrapped in immer.produce to create a new immutable state.
-Courtesy of immer.js, the function does not even need to return the new state value ;)
 
 It is possible to chain `next` calls to modify the state sequentially :
 ```javascript
@@ -183,6 +192,14 @@ npm run dev
 Builds in `dist/` folder
 ```
 npm run build
+
+```
+
+### Publish
+Publish changes onto npm
+```
+npm publish
+
 ```
 
 ### Test
