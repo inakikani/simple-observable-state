@@ -1,5 +1,5 @@
-const { BehaviorSubject, Subject, of, concat } = require("rxjs")
-const { take, takeWhile } = require("rxjs/operators")
+const { BehaviorSubject, Subject, of, concat, EMPTY, from } = require("rxjs")
+const { take, takeWhile, delay } = require("rxjs/operators")
 const { ObservableState } = require("../src")
 
 describe('new ObservableState', () => {
@@ -292,6 +292,21 @@ describe('ObservableState.next', () => {
             new ObservableState().next(()=>{})
         }).not.toThrow()
     })
+    test('does not throw - next Observable<any>', () => {
+        expect(() => {
+            new ObservableState().next(of(1))
+        }).not.toThrow()
+    })
+    test('does not throw - next Promise<any>', () => {
+        expect(() => {
+            new ObservableState().next(Promise.resolve(1))
+        }).not.toThrow()
+    })
+    test('does not throw - next Empty Observable', () => {
+        expect(() => {
+            new ObservableState().next(EMPTY)
+        }).not.toThrow()
+    })
 
 
     test('emits correct value = no value', done => {
@@ -483,6 +498,54 @@ describe('ObservableState.next', () => {
                 next: next,
                 complete: () => {
                     expect(next).toHaveBeenCalledWith(4)
+                    done()
+                }
+            })
+    })
+    test('emits correct async value = Observable<1>', done => {
+        let next = jest.fn()
+        new ObservableState().next(of(1).pipe(delay(50))) // the delay here ensures that we test the full flow: ie: on | - - - undefined - - - async value | - > 
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith(1)
+                    done()
+                }
+            })
+    })
+    test('emits correct async value = Observable<"foo">', done => {
+        let next = jest.fn()
+        new ObservableState().next(of("foo").pipe(delay(50)))
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith("foo")
+                    done()
+                }
+            })
+    })
+    test('emits correct async value = Promise<"foo">', done => {
+        let next = jest.fn()
+        new ObservableState().next(from(Promise.resolve("foo")).pipe(delay(50)))
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith("foo")
+                    done()
+                }
+            })
+    })
+    test('emits correct async value = Promise<()=>4>', done => {
+        let next = jest.fn()
+        new ObservableState().next(from(Promise.resolve(()=>4)).pipe(delay(50)))
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith(4)
                     done()
                 }
             })
