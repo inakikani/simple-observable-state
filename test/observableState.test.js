@@ -633,7 +633,7 @@ describe('ObservableState.next', () => {
         
     })
 
-    test('with unexisting path', done => {
+    test('set value at new path', done => {
         let next = jest.fn()
         let o = new ObservableState()
 
@@ -655,6 +655,23 @@ describe('ObservableState.next', () => {
             .next({}, 'new')
             .next(1, 'new.number')
             .next('END')
+    })
+    
+    test('set value async at new path', done => {
+        let next = jest.fn()
+        let o = new ObservableState({})
+
+        let deep = o
+            .path('deep')
+            .next(of('async value').pipe(delay(50)))
+                .pipe(take(2))
+                .subscribe({
+                    next: next,
+                    complete: () => {
+                        expect(next).toHaveBeenLastCalledWith('async value')
+                        done()
+                    }
+                })
     })
 
 })

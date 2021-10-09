@@ -101,17 +101,16 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         const pathArr = parsePath(path)
         const concatenatedPathArr = [...parsePath(this._pluck), ...pathArr]
 
-        if (this._source) {
-            this._source.next(nState, concatenatedPathArr)
+        if(nState instanceof Observable || nState instanceof Promise){
+            from(nState).pipe(take(1),timeout(6000))
+                .subscribe({
+                    next: this.next.bind(this),
+                    error: console.error.bind(0)
+                })
         } else {
-            if(nState instanceof Observable || nState instanceof Promise){
-                from(nState).pipe(take(1),timeout(6000))
-                    .subscribe({
-                        next: this.next.bind(this),
-                        error: console.error.bind(0)
-                    })
-            }
-            else {
+            if (this._source) {
+                this._source.next(nState, concatenatedPathArr)
+            } else {
                 let newState = produce(super.getValue(), draft => {
                     if (pathArr?.length === 0) {
                         if(typeof nState === 'function'){
