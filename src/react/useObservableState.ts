@@ -3,7 +3,6 @@ import { ObservableState } from ".."
 
 export function useObservableState<T>(state: T | ObservableState<T>): [T, ObservableState<T>] {
     const initial_state = useMemo<[any, ObservableState<any>]>(() => {
-        console.log('useMemo')
         const _state = typeof state === 'function' 
             ? state()
             : state

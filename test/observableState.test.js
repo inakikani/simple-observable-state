@@ -740,6 +740,15 @@ describe('ObservableState.path', () => {
             done()
         })
     })
+    test('path = valid array index int', done => {
+        const _state = ['value']
+        const state = new ObservableState(_state).path(0)
+        state.subscribe(s => {
+            expect(s).toBe(_state[0])
+            expect(s).toEqual('value')
+            done()
+        })
+    })
     test('path = invalid single prop string', done => {
         let next = jest.fn()
         const _state = {a:{b:'foo'}}

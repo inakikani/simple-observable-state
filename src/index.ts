@@ -1,5 +1,5 @@
-import { BehaviorSubject, from, Observable, ObservableInput } from "rxjs";
-import { filter, pluck, take, timeout } from 'rxjs/operators'
+import { BehaviorSubject, from, Observable } from "rxjs";
+import { distinctUntilChanged, filter, pluck, take, timeout } from 'rxjs/operators'
 import produce, { nothing } from 'immer'
 export * as v1 from './v1'
 export * from './react/useObservableState'
@@ -61,7 +61,8 @@ export class ObservableState<T> extends BehaviorSubject<T> {
                 this._source
                     .pipe(
                         filter(s => options?.ignoreUndefinedFromSource ?? !!s),
-                        pluck(...this._pluck)
+                        pluck(...this._pluck),
+                        distinctUntilChanged()
                     ).subscribe({
                         next: (s) => super.next(s as T),
                         error: err => super.error(err),
