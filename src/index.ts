@@ -45,6 +45,7 @@ export class ObservableState<T> extends BehaviorSubject<T> {
 
     _source?: ObservableState<T>
     _pluck?: string[]
+    _branches?: Record<string, ObservableState<any>>
 
     constructor(init: any, options?: ObservableStateOptions) {
         if(typeof init === 'function'){throw new TypeError("initial state cannot be a function")}
@@ -83,15 +84,20 @@ export class ObservableState<T> extends BehaviorSubject<T> {
         const pathArr = parsePath(path)
 
         if (pathArr.length === 0) { return this as ObservableState<any> }
-
+        
         const ID = `${this._source?.id ?? ''}:${pathArr.toString()}`
+        if (this._branches?.[ID]) { return this._branches?.[ID]}
+        
         const initialPathState = get(pathArr, this.getValue())
 
-        return new ObservableState<S>(initialPathState, {
+        const options = {
             id: ID,
             source: this,
             pluck: pathArr
-        })
+        }
+        this._branches[ID] = new ObservableState<S>(initialPathState, options)
+        
+        return this._branches[ID]
     }
 
     subscribe(...args: any[]) {
