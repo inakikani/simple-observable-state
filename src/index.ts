@@ -107,7 +107,6 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 
     next(nState: any, path?: string | string[]) {
-        console.log('next')
         const pathArr = parsePath(path)
         const concatenatedPathArr = [...parsePath(this._pluck), ...pathArr]
 
