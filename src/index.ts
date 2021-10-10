@@ -41,15 +41,16 @@ export type ObservableStateOptions = {
 
 export class ObservableState<T> extends BehaviorSubject<T> {
 
-    id: string
+    id: string;
 
     _source?: ObservableState<T>
     _pluck?: string[]
-    _branches?: Record<string, ObservableState<any>>
+    _branches: Record<string, ObservableState<any>>
 
     constructor(init: any, options?: ObservableStateOptions) {
         if(typeof init === 'function'){throw new TypeError("initial state cannot be a function")}
         super(init)
+        this._branches = {}
         if (options?.id) {
             this.id = options.id
         } else {
@@ -82,19 +83,20 @@ export class ObservableState<T> extends BehaviorSubject<T> {
 
     path<S>(path: string | string[]): ObservableState<S> {
         const pathArr = parsePath(path)
-
+        
         if (pathArr.length === 0) { return this as ObservableState<any> }
         
         const ID = `${this._source?.id ?? ''}:${pathArr.toString()}`
-        if (this._branches?.[ID]) { return this._branches?.[ID]}
+        if (this._branches?.[ID]) { return this._branches[ID]}
         
         const initialPathState = get(pathArr, this.getValue())
-
+        
         const options = {
             id: ID,
             source: this,
             pluck: pathArr
         }
+        
         this._branches[ID] = new ObservableState<S>(initialPathState, options)
         
         return this._branches[ID]
@@ -105,6 +107,7 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 
     next(nState: any, path?: string | string[]) {
+        console.log('next')
         const pathArr = parsePath(path)
         const concatenatedPathArr = [...parsePath(this._pluck), ...pathArr]
 

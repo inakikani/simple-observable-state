@@ -1,6 +1,6 @@
 {
   "name": "simple-observable-state",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "manage state with observables",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
