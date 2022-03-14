@@ -189,7 +189,7 @@ npm run dev
 ```
 
 ### Build
-Builds in `dist/` folder
+Builds in `dist/` folder.
 ```
 npm run build
 
