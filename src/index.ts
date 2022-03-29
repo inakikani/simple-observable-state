@@ -1,6 +1,7 @@
 import { BehaviorSubject, from, Observable } from "rxjs";
 import { distinctUntilChanged, filter, pluck, take, timeout } from 'rxjs/operators'
-import produce, { nothing } from 'immer'
+import produce, { nothing, setAutoFreeze } from 'immer'
+setAutoFreeze(false)
 export * as v1 from './v1'
 export * from './react/useObservableState'
 /**
@@ -107,6 +108,9 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     }
 
     next(nState: any, path?: string | string[]) {
+        function get(path: string[], obj: any) {
+            return path.reduce((src, str) => src?.[str] ?? null, obj)
+        }
         const pathArr = parsePath(path)
         const concatenatedPathArr = [...parsePath(this._pluck), ...pathArr]
 
@@ -120,26 +124,30 @@ export class ObservableState<T> extends BehaviorSubject<T> {
             if (this._source) {
                 this._source.next(nState, concatenatedPathArr)
             } else {
-                let newState = produce(super.getValue(), draft => {
-                    if (pathArr?.length === 0) {
-                        if(typeof nState === 'function'){
-                            let reducedState = produce(nState)(draft)
-                            return reducedState ?? nothing
+                try {
+                    let newState = produce(super.getValue(), draft => {
+                        if (pathArr?.length === 0) {
+                            if(typeof nState === 'function'){
+                                let reducedState = produce(nState)(draft)
+                                return reducedState ?? nothing
+                            } else {
+                                return nState === undefined ? nothing : nState
+                            }
                         } else {
-                            return nState === undefined ? nothing : nState
+                            let propName = pathArr.pop()
+                            let _old = get(pathArr, draft)[propName]
+                            if(typeof nState === 'function'){
+                                let reducedState = produce(nState)(_old)
+                                get(pathArr, draft)[propName] = reducedState
+                            } else {
+                                get(pathArr, draft)[propName] = nState
+                            }
                         }
-                    } else {
-                        let propName = pathArr.pop()
-                        let _old = get(pathArr, draft)[propName]
-                        if(typeof nState === 'function'){
-                            let reducedState = produce(nState)(_old)
-                            get(pathArr, draft)[propName] = reducedState
-                        } else {
-                            get(pathArr, draft)[propName] = nState
-                        }
-                    }
-                })
-                super.next(newState as T)
+                    })
+                    super.next(newState as T)   
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
 
