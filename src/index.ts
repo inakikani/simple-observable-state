@@ -37,7 +37,8 @@ export type ObservableStateOptions = {
     source?: ObservableState<any>,
     async?: Promise<any>,
     pluck?: string[],
-    ignoreUndefinedFromSource?: boolean
+    ignoreUndefinedFromSource?: boolean,
+    allowFunctionAsInitialState?: boolean
 }
 
 export class ObservableState<T> extends BehaviorSubject<T> {
@@ -50,9 +51,9 @@ export class ObservableState<T> extends BehaviorSubject<T> {
     _branches: Record<string, ObservableState<any>>
 
     constructor(init: any, options?: ObservableStateOptions) {
-        let seed
+        let seed: any
         if(typeof init === 'function'){
-            seed = init()
+            seed = options?.allowFunctionAsInitialState ? init : init()
         } else if (init instanceof Observable || init instanceof Promise) {
             seed = void 0
         } else {
