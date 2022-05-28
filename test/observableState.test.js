@@ -60,11 +60,25 @@ describe('new ObservableState', () => {
         }).not.toThrow()
     })
 
-    test('does throw initial = function', () => {
+    test('does not throw initial = function', () => {
         expect(()=>{
             new ObservableState(() => {})
-        }).toThrow("initial state cannot be a function")
+        }).not.toThrow()
     })
+    
+    test('does not throw initial = Observable', () => {
+        expect(()=>{
+            new ObservableState(of(1))
+        }).not.toThrow()
+    })
+    
+    test('does not throw initial = Promise', () => {
+        expect(()=>{
+            new ObservableState(Promise.resolve(1))
+        }).not.toThrow()
+    })
+    
+    
 })
 
 describe("ObservableState.subscribe", () => {
@@ -103,7 +117,6 @@ describe("ObservableState.subscribe", () => {
             new ObservableState(100).subscribe({a: () => {}})
         }).not.toThrow()
     })
-
 
     test('value emitted on subscribe no initial', done => {
         let next = jest.fn()
@@ -216,6 +229,42 @@ describe("ObservableState.subscribe", () => {
                 done()
             }
         })
+    })
+    test('value emitted on subscribe = function:number', done => {
+        let next = jest.fn()
+        new ObservableState(() => 101)
+            .pipe(take(1))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenCalledWith(101)
+                    done()
+                }
+            })
+    })
+    test('values emitted on subscribe = Observable<number>', done => {
+        let next = jest.fn()
+        new ObservableState(of(202).pipe(delay(5)))
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith(202)
+                    done()
+                }
+            })
+    })
+    test('values emitted on subscribe = Promise<number>', done => {
+        let next = jest.fn()
+        new ObservableState(Promise.resolve(303))
+            .pipe(take(2))
+            .subscribe({
+                next: next,
+                complete: () => {
+                    expect(next).toHaveBeenLastCalledWith(303)
+                    done()
+                }
+            })
     })
 
 })
@@ -504,7 +553,7 @@ describe('ObservableState.next', () => {
     })
     test('emits correct async value = Observable<1>', done => {
         let next = jest.fn()
-        new ObservableState().next(of(1).pipe(delay(50))) // the delay here ensures that we test the full flow: ie: on | - - - undefined - - - async value | - > 
+        new ObservableState().next(of(1).pipe(delay(5))) // the delay here ensures that we test the full flow: ie: on | - - - undefined - - - async value | - > 
             .pipe(take(2))
             .subscribe({
                 next: next,

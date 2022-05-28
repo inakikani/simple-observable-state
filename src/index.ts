@@ -44,13 +44,27 @@ export class ObservableState<T> extends BehaviorSubject<T> {
 
     id: string;
 
+    _promise?: Promise<any>
     _source?: ObservableState<T>
     _pluck?: string[]
     _branches: Record<string, ObservableState<any>>
 
     constructor(init: any, options?: ObservableStateOptions) {
-        if(typeof init === 'function'){throw new TypeError("initial state cannot be a function")}
-        super(init)
+        let seed
+        if(typeof init === 'function'){
+            seed = init()
+        } else if (init instanceof Observable || init instanceof Promise) {
+            seed = void 0
+        } else {
+            seed = init
+        }
+        super(seed)
+        if (init instanceof Observable || init instanceof Promise) {
+            from(init).pipe(take(1),timeout(6000)).subscribe({
+                next: this.next.bind(this),
+                error: console.error.bind(0)
+            })
+        }
         this._branches = {}
         if (options?.id) {
             this.id = options.id
